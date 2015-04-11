@@ -152,7 +152,7 @@ index:
 如果你的log日志中出现如下字样，恭喜你，成功了。(日志在$ES_HOME/logs下，哪个文件，当然就是你的集群名称啦，知道的无视这段吧)
 
 
-```
+```javascript
 [2013-10-25 18:23:55,427][INFO ][ansj-analyzer            ] ansj停止词典加载完毕!
 [2013-10-25 18:24:01,509][INFO ][ansj-analyzer            ] ansj分词器预热完毕，可以使用!
 [2013-10-25 18:24:01,523][INFO ][ansj-redis-pool          ] master.redis.yao.com:6379
@@ -193,6 +193,17 @@ curl -XGET http://[host]:9200/[index]/_analyze?analyzer=ansj_query&text=%E5%8C%9
 },
 ```
 
+```javascript
+for example
+
+curl -XPUT http://localhost:9200/ansj_myindex -d '
+"byName": {
+  "type": "string",
+  "index_analyzer": "index_ansj",
+  "search_analyzer": "query_ansj"
+}'
+```
+
 然后通过redis发布一个新词看看
 
 ```
@@ -225,7 +236,3 @@ publish ansj_term a:d:减肥瘦身
 ```
 
 又回来了
-
-
-## 结束
-就写这么多吧，有啥问题，QQ找我 
