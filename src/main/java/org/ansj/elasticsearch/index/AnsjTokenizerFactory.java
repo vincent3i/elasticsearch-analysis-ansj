@@ -20,14 +20,17 @@ import org.elasticsearch.index.settings.IndexSettings;
 public class AnsjTokenizerFactory extends AbstractTokenizerFactory {
 
 	@Inject
-	 public AnsjTokenizerFactory(Index index,@IndexSettings Settings indexSettings,@Assisted String name, @Assisted Settings settings) {
+	public AnsjTokenizerFactory(Index index,
+			@IndexSettings Settings indexSettings, @Assisted String name,
+			@Assisted Settings settings) {
 		super(index, indexSettings, name, settings);
 		init(indexSettings, settings);
 	}
 
 	@Override
 	public Tokenizer create(Reader reader) {
-		return new AnsjTokenizer(new IndexAnalysis(new BufferedReader(reader)), reader, filter, pstemming);
+		return new AnsjTokenizer(new IndexAnalysis(new BufferedReader(reader)),
+				reader, filter, pstemming);
 	}
 
 }

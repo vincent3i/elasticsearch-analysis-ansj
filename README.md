@@ -1,14 +1,20 @@
 ##前言
 
-这是一个elasticsearch的中文分词插件，基于ansj，感谢本人，感谢群内热心的朋友。
-并宣传一下我们的群QQ211682609
+这是一个elasticsearch的中文分词插件，基于ansj2，感谢原作者，感谢ansj的作者和社区贡献人员。
+
+目前我fork下来主要是为了升级版本，以及添加redis的认证功能
+
+关于几个中文搜索引擎可以看看下面这两篇
+
+http://www.chepoo.com/ik-ansj-mmseg4j-segmentation-performance-comparison.html
+http://my.oschina.net/apdplat/blog/228615?p=1
 
 ##版本对应
 
 | plugin        |     elasticsearch|
 | --------      |       -----:  | 
 | 1.0.0Release  |     0.90.2    |
-| master        |     1.0.0     |
+| master        |     1.X.0     |
 
 
 ==========
@@ -67,7 +73,9 @@ index.analysis.analyzer.default.type: ansj_index
 
 #####高级配置:
 ```yaml
-################################## ANSJ PLUG CONFIG ################################
+################################## ANSJ PLUG CONFIG 
+注意：tokenizer的加载会在analyzer之前，如果你配置了redis，记得下面关于tokenizer一定要配置
+################################
 index:
    analysis:
      analyzer:
