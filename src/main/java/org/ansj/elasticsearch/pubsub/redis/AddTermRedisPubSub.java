@@ -17,6 +17,7 @@ public class AddTermRedisPubSub extends JedisPubSub {
 		logger.debug("channel: {} and message: {} ", channel, message);
 		String[] msg = message.split(":");
 		if (msg.length != 3) {
+			logger.debug("Style of message must be matched like [u|a]:[c:d]|\\w+");
 			return;
 		}
 		if ("u".equals(msg[0])) {
@@ -27,17 +28,17 @@ public class AddTermRedisPubSub extends JedisPubSub {
 				UserDefineLibrary.removeWord(msg[2]);
 				FileUtils.remove(msg[2]);
 			}
-		} else if ("a".equals(msg[0]))
+		} else if ("a".equals(msg[0])) {
 			if ("c".equals(msg[1])) {
 				String[] cmd = msg[2].split("-");
 				Value value = new Value(cmd[0], cmd[1].split(","));
 				Library.insertWord(UserDefineLibrary.ambiguityForest, value);
-				FileUtils.appendAMB(msg[2].replace(",", "\t").replaceAll("-",
-						"\t"));
+				FileUtils.appendAMB(msg[2].replace(",", "\t").replaceAll("-", "\t"));
 			} else if ("d".equals(msg[1])) {
 				Library.removeWord(UserDefineLibrary.ambiguityForest, msg[2]);
 				FileUtils.removeAMB(msg[2]);
 			}
+		}
 	}
 
 	@Override

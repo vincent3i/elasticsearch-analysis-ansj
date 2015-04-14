@@ -5,6 +5,8 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -14,6 +16,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 
+import org.elasticsearch.common.lang3.StringUtils;
 import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.Loggers;
 
@@ -27,6 +30,8 @@ import org.elasticsearch.common.logging.Loggers;
 public class SimpleCrypt {
 	
 	private static ESLogger logger = Loggers.getLogger("ansj-analyzer");
+	
+	private static Map<String, String> passStore = new ConcurrentHashMap<String, String>();
 
 	/**
 	 * Used to build output as Hex
@@ -268,6 +273,36 @@ public class SimpleCrypt {
 		}
 		return out;
 	}
+	
+	public String encrypt(String decoded) {
+		if(null == decoded || "".equals(decoded)) {
+			logger.info("Decoded value is empty");
+			return "";
+		}
+		
+		String encoded = encryptToDES(getDESKey(), decoded);
+		return null == encoded ? StringUtils.EMPTY : encoded;
+	}
+	
+	public String decrypt(String encoded) {
+		if(null == encoded || "".equals(encoded)) {
+			logger.info("Encoded value is empty");
+			return "";
+		}
+		
+		//加密后解密使用map方式提升性能
+		String decoded = passStore.get(encoded);
+		if(null == decoded) {
+			decoded = decryptByDES(getDESKey(), encoded);
+			if(StringUtils.isEmpty(decoded)) {
+				return StringUtils.EMPTY;
+			}
+			
+			passStore.put(decoded, encoded);
+		}
+		
+		return decoded;
+	}
 
 	/**
 	 * remove it when used in a formal env
@@ -283,16 +318,16 @@ public class SimpleCrypt {
 		
 		if("decode".equals(type)) {
 			//please forbiden this function when your have any secure request
-			String encryptPass = decryptByDES(getDESKey(), pass);
+			String decryptPass = decryptByDES(getDESKey(), pass);
 			System.out.println("Decode password [" + pass + "] as below --->>> ");
 			System.out.println("*******************************************************************");
-			System.out.println(encryptPass);
+			System.out.println(decryptPass);
 			System.out.println("*******************************************************************");
 		} else if ("encode".equals(type)) {
-			String decryptPass = encryptToDES(getDESKey(), pass);
+			String encryptPass = encryptToDES(getDESKey(), pass);
 			System.out.println("Encode password [" + pass + "] as below --->>> ");
 			System.out.println("*******************************************************************");
-			System.out.println(decryptPass);
+			System.out.println(encryptPass);
 			System.out.println("*******************************************************************");
 		}
 	}

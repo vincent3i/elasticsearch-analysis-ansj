@@ -11,7 +11,7 @@ index:
             maxidle: 10
             maxwait: 100
             testonborrow: true
-          ip: master.redis.yao.com:6379
+          ip: 127.0.0.1:6379
           channel: ansj_term
       query_ansj:
         alias: [ansj_query_analyzer]
@@ -23,7 +23,7 @@ index:
             maxidle: 10
             maxwait: 100
             testonborrow: true
-          ip: master.redis.yao.com:6379
+          ip: 127.0.0.1:6379
           channel: ansj_term
       customer_ansj_index:
         tokenizer: index_ansj_token
@@ -43,7 +43,7 @@ index:
             maxidle: 10
             maxwait: 100
             testonborrow: true
-          ip: master.redis.yao.com:6379
+          ip: 127.0.0.1:6379
           channel: ansj_term
       query_ansj_token:
         type: ansj_query_token
@@ -56,7 +56,7 @@ index:
             maxidle: 10
             maxwait: 100
             testonborrow: true
-          ip: master.redis.yao.com:6379
+          ip: 127.0.0.1:6379
           channel: ansj_term
     filter:
       sysfilter:
