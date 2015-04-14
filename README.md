@@ -44,7 +44,7 @@ http://my.oschina.net/apdplat/blog/228615?p=1
 
 * 第五步，拷贝$Project_Home/target/releases/目录下的zip包到任意位置，并解压
 
-* 第六步，将解压后的文件拷贝到$ES_HOME/plugins目录下
+* 第六步，将解压后的文件拷贝到$ES_HOME/plugins目录下,词典拷贝到config/ansj下面
 
 * 第七步，配置分词插件，将下面配置粘贴到，es下config/elasticsearch.yml 文件末尾。
 
@@ -193,17 +193,6 @@ curl -XGET http://[host]:9200/[index]/_analyze?analyzer=ansj_query&text=%E5%8C%9
 },
 ```
 
-```javascript
-for example
-
-curl -XPUT http://localhost:9200/ansj_myindex -d '
-"byName": {
-  "type": "string",
-  "index_analyzer": "index_ansj",
-  "search_analyzer": "query_ansj"
-}'
-```
-
 然后通过redis发布一个新词看看
 
 ```
@@ -236,3 +225,119 @@ publish ansj_term a:d:减肥瘦身
 ```
 
 又回来了
+
+
+
+
+#####example
+```javascript
+curl -XPUT http://localhost:9200/ansj2blog
+```
+
+```javascript
+curl -XPUT http://localhost:9200/ansj2blog/_mapping/vincent -d '
+{
+  "properties":
+  { 
+  
+  "title":{"type":"string","index":"analyzed","index_analyzer": "index_ansj","search_analyzer": "query_ansj"},
+   "content":{"type":"string","index":"analyzed","index_analyzer": "customer_ansj_index","search_analyzer": "customer_ansj_query"},
+    "tags":{"type":"string","index":"analyzed","index_analyzer": "index_ansj","search_analyzer": "query_ansj"}
+  }
+}
+'
+```
+
+index...
+
+```javascript
+curl -XPOST http://localhost:9200/ansj2blog/vincent/1 -d '
+{
+{"content":"中国驻洛杉矶领事馆遭亚裔男子枪击 嫌犯已自首"}
+}
+'
+
+curl -XPOST http://localhost:9200/ansj2blog/vincent/2 -d '
+{
+{"content":"公安部：各地校车将享最高路权"}
+}
+'
+
+curl -XPOST http://localhost:9200/ansj2blog/vincent/3 -d '
+{
+{"content":"中韩渔警冲突调查：韩警平均每天扣1艘中国渔船"}
+}
+'
+
+curl -XPOST http://localhost:9200/ansj2blog/vincent/4 -d '
+{
+{"content":"美国留给伊拉克的是个烂摊子吗"}
+}
+'
+```
+
+query with highlighting
+
+```javascript
+curl -XPOST http://localhost:9200/ansj2blog/vincent/_search -d '
+{
+{
+    "query" : { "term" : { "content" : "中国" }},
+    "highlight" : {
+        "pre_tags" : ["<tag1>", "<tag2>"],
+        "post_tags" : ["</tag1>", "</tag2>"],
+        "fields" : {
+            "content" : {}
+        }
+    }
+}
+}
+'
+```
+
+here is result:
+```javascript
+{
+    "took": 15,
+    "timed_out": false,
+    "_shards": {
+        "total": 5,
+        "successful": 5,
+        "failed": 0
+    },
+    "hits": {
+        "total": 2,
+        "max_score": 0.076713204,
+        "hits": [
+            {
+                "_index": "ansj2blog",
+                "_type": "vincent",
+                "_id": "1",
+                "_score": 0.076713204,
+                "_source": {
+                    "content": "中国驻洛杉矶领事馆遭亚裔男子枪击 嫌犯已自首"
+                },
+                "highlight": {
+                    "content": [
+                        "<tag1>中国</tag1>驻洛杉矶领事馆遭亚裔男子枪击 嫌犯已自首"
+                    ]
+                }
+            },
+            {
+                "_index": "ansj2blog",
+                "_type": "vincent",
+                "_id": "3",
+                "_score": 0.076713204,
+                "_source": {
+                    "content": "中韩渔警冲突调查：韩警平均每天扣1艘中国渔船"
+                },
+                "highlight": {
+                    "content": [
+                        "中韩渔警冲突调查：韩警平均每天扣1艘<tag1>中国</tag1>渔船"
+                    ]
+                }
+            }
+        ]
+    }
+}
+```
