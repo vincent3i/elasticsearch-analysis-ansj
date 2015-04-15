@@ -1,6 +1,6 @@
 package org.ansj.elasticsearch.pubsub.redis;
 
-import org.ansj.elasticsearch.crypt.SimpleCrypt;
+import static org.ansj.elasticsearch.crypt.SimpleCrypt.decrypt;
 import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.Loggers;
 
@@ -126,7 +126,7 @@ public class RedisPoolBuilder {
 		
 		if(this.isEncrypted) {
 			//need encrypt
-			this.auth = SimpleCrypt.encryptToDES(SimpleCrypt.getDESKey(), this.auth);
+			this.auth = decrypt(this.auth);
 		}
 		
 		return new JedisPool(config, ip, port, Protocol.DEFAULT_TIMEOUT, this.auth);

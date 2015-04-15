@@ -274,20 +274,20 @@ public class SimpleCrypt {
 		return out;
 	}
 	
-	public String encrypt(String decoded) {
-		if(null == decoded || "".equals(decoded)) {
+	public static String encrypt(String decoded) {
+		if(StringUtils.isEmpty(decoded)) {
 			logger.info("Decoded value is empty");
-			return "";
+			return StringUtils.EMPTY;
 		}
 		
 		String encoded = encryptToDES(getDESKey(), decoded);
 		return null == encoded ? StringUtils.EMPTY : encoded;
 	}
 	
-	public String decrypt(String encoded) {
-		if(null == encoded || "".equals(encoded)) {
+	public static String decrypt(String encoded) {
+		if(StringUtils.isEmpty(encoded)) {
 			logger.info("Encoded value is empty");
-			return "";
+			return StringUtils.EMPTY;
 		}
 		
 		//加密后解密使用map方式提升性能
